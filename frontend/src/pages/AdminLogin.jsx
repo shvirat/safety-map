@@ -77,11 +77,10 @@ const AdminLogin = () => {
             </form>
           </div>
           
-          <div className="mt-10 pt-6 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-xs text-slate-400 font-medium">Secured by 256-bit AES</span>
+          <div className="mt-10 pt-6 border-t border-slate-100 flex items-center justify-center">
             <button 
               onClick={() => navigate('/')} 
-              className="text-sm text-indigo-600 hover:text-indigo-500 font-semibold transition-colors"
+              className="text-sm text-indigo-600 hover:text-indigo-500 font-semibold transition-colors cursor-pointer"
             >
               Return Home
             </button>

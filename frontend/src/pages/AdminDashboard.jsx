@@ -138,9 +138,9 @@ const AdminDashboard = () => {
       <main className="flex-1 flex overflow-hidden">
         
         {/* Left Sidebar - List View */}
-        <div className={`flex flex-col border-r border-slate-200 bg-slate-50/50 w-full ${selectedReport ? 'hidden lg:flex lg:w-1/3 xl:w-1/4' : 'flex'} h-full`}>
+        <div className={`flex flex-col border-r border-slate-200 bg-slate-50/50 w-full lg:w-1/3 shrink-0 ${selectedReport ? 'hidden lg:flex' : 'flex'} h-full`}>
           
-          <div className="p-4 sm:p-6 border-b border-slate-200 bg-white">
+          <div className="p-4 border-b border-slate-200 bg-white">
             <h1 className="text-xl font-bold text-slate-900 flex items-center gap-3 mb-4">
               <LayoutDashboard className="w-5 h-5 text-indigo-500" />
               Overview
@@ -156,7 +156,7 @@ const AdminDashboard = () => {
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(tab.id); setSelectedReport(null); }}
-                  className={`flex-1 py-1.5 px-3 text-xs sm:text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                  className={`cursor-pointer flex-1 py-1.5 px-3 text-xs sm:text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
                     activeTab === tab.id 
                       ? 'bg-white text-indigo-700 shadow-sm' 
                       : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -171,7 +171,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {loading ? (
               <div className="flex justify-center items-center h-32">
                  <div className="animate-spin rounded-full h-8 w-8 border-[3px] border-slate-200 border-b-indigo-600"></div>
@@ -216,7 +216,7 @@ const AdminDashboard = () => {
           <div className="flex-1 overflow-y-auto bg-white flex flex-col w-full h-full relative">
             <button 
               onClick={() => setSelectedReport(null)}
-              className="lg:hidden absolute top-4 left-4 z-400 bg-white rounded-full p-2 shadow-md border border-slate-200 text-slate-500"
+              className="lg:hidden absolute top-4 right-4 z-400 bg-white rounded-full p-2 shadow-md border border-slate-200 text-slate-500"
             >
               <X className="w-5 h-5" />
             </button>
@@ -323,12 +323,9 @@ const AdminDashboard = () => {
             </div>
           </div>
         ) : (
-          <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-50/50 relative">
+          <div className="hidden lg:flex flex-1 items-center justify-center bg-white flex-col h-full relative">
              {/* Empty State when no report selected */}
              <div className="text-center">
-                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 mx-auto mb-6 text-indigo-200">
-                   <ShieldCheck className="w-10 h-10 text-indigo-400" />
-                </div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">Select an Incident Review</h3>
                 <p className="text-slate-500 max-w-sm mx-auto font-medium">
                   Choose a report from the correct queue to begin your validation process.
