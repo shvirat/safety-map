@@ -91,7 +91,7 @@ const AdminLogin = () => {
       {/* Right side visual */}
       <div className="hidden lg:block relative flex-1 w-0">
         <div className="absolute inset-0 h-full w-full bg-slate-900 flex justify-center items-center overflow-hidden">
-          {/* Decorative elements */}
+          {/* Decoration */}
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-indigo-500/20 blur-3xl"></div>
           <div className="absolute bottom-10 -left-20 w-120 h-120 rounded-full bg-emerald-500/10 blur-3xl"></div>
           

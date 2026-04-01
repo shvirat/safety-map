@@ -1,10 +1,10 @@
 import Report from '../models/Report.js';
 
-// @desc    Get all reports (Admin only)
+// @desc    Get all reports (only admin)
 // @route   GET /api/admin/reports
 export const getAllReports = async (req, res) => {
   try {
-    // Check admin secret header
+
     if (req.headers['x-admin-secret'] !== process.env.ADMIN_SECRET) {
       return res.status(401).json({ message: 'Not authorized' });
     }

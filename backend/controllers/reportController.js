@@ -17,7 +17,6 @@ export const createReport = async (req, res) => {
   try {
     const { location, type, severity, datetime, description, imageUrl } = req.body;
     
-    // Quick validation
     if (!location || !location.lat || !location.lng || !type) {
       return res.status(400).json({ message: 'Location and type are required' });
     }

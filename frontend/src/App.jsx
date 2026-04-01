@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
-        {/* Public Route */}
+        {/* Public route */}
         <Route path="/" element={<MapComponent />} />
         
         {/* Admin Routes */}

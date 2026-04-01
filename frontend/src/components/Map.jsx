@@ -10,7 +10,7 @@ import ReportModal from './ReportModal';
 import { Crosshair, ShieldAlert, Navigation } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Fix generic leaflet icon error just in case any default marker is used
+// leaflet ka default icon fix kr rhe h warna purana dikhega
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Helper for Marker Colors using refined SaaS palette
+// marker k colours set krne k lie
 const getMarkerColor = (type, severity) => {
   if (severity === 'Critical') return '#e11d48'; // rose-600
 
@@ -125,7 +125,7 @@ const MapComponent = () => {
   return (
     <div className="relative h-screen w-full font-sans bg-slate-50 overflow-hidden">
       
-      {/* Brand Header */}
+      
       <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-1000 flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur border border-white/20 shadow-md sm:px-5 sm:py-3 px-3 py-2 rounded-xl sm:rounded-2xl">
         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-inner">
           <ShieldAlert className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -136,7 +136,7 @@ const MapComponent = () => {
         </div>
       </div>
 
-      {/* Action / Admin Link floating bottom left */}
+
       <div className="absolute bottom-6 left-4 z-1000">
         <Link 
           to="/admin" 
@@ -147,15 +147,15 @@ const MapComponent = () => {
         </Link>
       </div>
 
-      {/* Floating Action Hint Bottom Center */}
+      
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-1000 pointer-events-none w-[90%] sm:w-auto flex justify-center">
         <div className="bg-slate-900/95 backdrop-blur-md px-4 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-2xl flex items-center gap-2 sm:gap-3 border border-slate-700/50">
-          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse flex-shrink-0"></div>
+          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shrink-0"></div>
           <span className="text-[13px] sm:text-sm font-medium text-white shadow-sm whitespace-nowrap">Tap anywhere to report</span>
         </div>
       </div>
 
-      {/* Locate Me Button */}
+      
       <button 
         onClick={focusUserLocation}
         className="absolute bottom-24 right-4 md:bottom-6 md:right-6 z-1000 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 group"
@@ -164,7 +164,7 @@ const MapComponent = () => {
         <Navigation className="w-6 h-6 group-hover:rotate-12 transition-transform" />
       </button>
 
-      {/* Map Container */}
+      
       <MapContainer 
         center={DELHI_NCR_CENTER} 
         zoom={11} 
@@ -181,7 +181,7 @@ const MapComponent = () => {
         <SearchField />
         <MapClickComponent onMapClick={handleMapClick} />
 
-        {/* User Location */}
+        {/* user k liye blue dot */}
         {userLocation && (
           <CircleMarker
             center={[userLocation.lat, userLocation.lng]}

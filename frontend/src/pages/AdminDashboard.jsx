@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     try {
       const data = await reportService.getAllReports(adminSecret);
       setReports(data || []);
-      // If we had a selected report, update it
+      
       if (selectedReport) {
         const updated = (data || []).find(r => r._id === selectedReport._id);
         setSelectedReport(updated || null);
@@ -53,7 +53,7 @@ const AdminDashboard = () => {
       toast.success(`Incident marked as ${status}`);
       fetchReports();
       if (selectedReport && selectedReport._id === id) {
-        setSelectedReport(null); // Return to list view
+        setSelectedReport(null); 
       }
     } catch (error) {
       toast.error('Failed to update status');
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
     <div className="h-screen bg-slate-50 flex flex-col font-sans overflow-hidden">
       
       {/* Top Navbar */}
-      <nav className="bg-white border-b border-slate-200 flex-shrink-0 z-30">
+      <nav className="bg-white border-b border-slate-200 shrink-0 z-30">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-3">
@@ -137,7 +137,7 @@ const AdminDashboard = () => {
 
       <main className="flex-1 flex overflow-hidden">
         
-        {/* Left Sidebar - List View */}
+        {/* Left Sidebar */}
         <div className={`flex flex-col border-r border-slate-200 bg-slate-50/50 w-full lg:w-1/3 shrink-0 ${selectedReport ? 'hidden lg:flex' : 'flex'} h-full`}>
           
           <div className="p-4 border-b border-slate-200 bg-white">
@@ -211,7 +211,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Right Side - Detail Validation View */}
+        {/* Right Side */}
         {selectedReport ? (
           <div className="flex-1 overflow-y-auto bg-white flex flex-col w-full h-full relative">
             <button 
@@ -259,7 +259,7 @@ const AdminDashboard = () => {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                {/* Minimap for precise location validation */}
+                {/* Minimap location */}
                 <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm h-[300px] z-0 relative">
                   <div className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-indigo-500 shrink-0" />
@@ -291,7 +291,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {/* Details text content */}
+                {/* Details content */}
                 <div>
                   <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl h-full flex flex-col">
                     <h3 className="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Witness Account / Details</h3>
@@ -308,7 +308,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* Huge Image View */}
+              {/* Image View */}
               {selectedReport.imageUrl && (
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wider flex items-center gap-2">
@@ -324,7 +324,7 @@ const AdminDashboard = () => {
           </div>
         ) : (
           <div className="hidden lg:flex flex-1 items-center justify-center bg-white flex-col h-full relative">
-             {/* Empty State when no report selected */}
+             {/* When no report is selected */}
              <div className="text-center">
                 <h3 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">Select an Incident Review</h3>
                 <p className="text-slate-500 max-w-sm mx-auto font-medium">

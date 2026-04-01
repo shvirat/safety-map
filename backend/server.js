@@ -5,20 +5,18 @@ import connectDB from './config/db.js';
 import reportRoutes from './routes/reports.js';
 import adminRoutes from './routes/admin.js';
 
-// Load env vars
+
 dotenv.config();
 
-// Connect to database
 connectDB();
 
 const app = express();
 
-// Middleware
+// zruri middlewares
 app.use(cors());
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use('/api/reports', reportRoutes);
 app.use('/api/admin/reports', adminRoutes);
 

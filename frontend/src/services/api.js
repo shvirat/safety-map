@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_URL = 'http://localhost:5000/api';
 
 export const reportService = {
-  // Public
+  
   getApprovedReports: async () => {
     const response = await axios.get(`${API_URL}/reports`);
     return response.data;
@@ -12,10 +12,10 @@ export const reportService = {
   createReport: async (reportData) => {
     let imageUrl = '';
 
-    // If there's an image, upload to Cloudinary Unsigned API first
+    // Upload to Cloudinary
     if (reportData.imageFile) {
       const cloudName = 'dsfcdfrlz';
-      const uploadPreset = 'safety-map-str-742-ram-108'; // Using the cloudname as the user specified
+      const uploadPreset = 'safety-map-str-742-ram-108';
 
       const formData = new FormData();
       formData.append('file', reportData.imageFile);
@@ -33,7 +33,7 @@ export const reportService = {
       }
     }
 
-    // Now send the normal JSON payload to our backend
+    // Send the normal JSON to backend
     const payload = {
       location: reportData.location,
       type: reportData.type,
@@ -47,7 +47,7 @@ export const reportService = {
     return response.data;
   },
 
-  // Admin
+  // Admin things
   getAllReports: async (adminSecret) => {
     const response = await axios.get(`${API_URL}/admin/reports`, {
       headers: { 'x-admin-secret': adminSecret }

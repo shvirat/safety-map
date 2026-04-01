@@ -162,7 +162,7 @@ const ReportModal = ({ location, onClose, onSubmitSuccess }) => {
                 </div>
               </div>
 
-              {/* Enhanced Image File Input */}
+              {/* Image upload */}
               <div>
                 <label className="block text-[11px] sm:text-[13px] font-bold text-slate-700 mb-2 uppercase tracking-wider">Photo Evidence (Optional)</label>
                 {!previewUrl ? (
