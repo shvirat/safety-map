@@ -88,3 +88,44 @@ body {
     margin-top: 64px !important;
   }
 }
+
+/* Pulse Marker CSS */
+.custom-pulse-marker {
+  background: transparent;
+  border: none;
+}
+
+.pulse-container {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.pulse-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid;
+  animation: pulse-ring-anim 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+@keyframes pulse-ring-anim {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; border-width: 3px; }
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; border-width: 0px; }
+}

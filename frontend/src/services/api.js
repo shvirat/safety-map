@@ -48,6 +48,11 @@ export const reportService = {
   },
 
   // Admin things
+  verifyAdmin: async (adminSecret) => {
+    const response = await axios.post(`${API_URL}/admin/login`, { secret: adminSecret });
+    return response.data;
+  },
+
   getAllReports: async (adminSecret) => {
     const response = await axios.get(`${API_URL}/admin/reports`, {
       headers: { 'x-admin-secret': adminSecret }

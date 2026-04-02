@@ -2,27 +2,29 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, ArrowRight, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { reportService } from '../services/api';
 
 const AdminLogin = () => {
   const [secret, setSecret] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate slight network delay for premium feel
-    setTimeout(() => {
-      setLoading(false);
-      if (secret === 'supersecret123') { 
+    try {
+      const response = await reportService.verifyAdmin(secret);
+      if (response.success) {
         localStorage.setItem('adminSecret', secret);
         toast.success('Authentication successful', { icon: '🔐' });
         navigate('/admin/dashboard');
-      } else {
-        toast.error('Invalid credentials provided');
       }
-    }, 600);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Invalid credentials provided');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

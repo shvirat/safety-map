@@ -43,3 +43,18 @@ export const updateReportStatus = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+// @desc    Verify admin credentials
+// @route   POST /api/admin/login
+export const adminLogin = async (req, res) => {
+  try {
+    const { secret } = req.body;
+    if (secret === process.env.ADMIN_SECRET) {
+      res.json({ success: true, message: 'Authentication successful' });
+    } else {
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};

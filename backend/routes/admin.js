@@ -1,12 +1,14 @@
 import express from 'express';
-import { getAllReports, updateReportStatus } from '../controllers/adminController.js';
+import { getAllReports, updateReportStatus, adminLogin } from '../controllers/adminController.js';
 
 const router = express.Router();
 
-router.route('/')
+router.post('/login', adminLogin);
+
+router.route('/reports')
   .get(getAllReports);
 
-router.route('/:id')
+router.route('/reports/:id')
   .put(updateReportStatus);
 
 export default router;
