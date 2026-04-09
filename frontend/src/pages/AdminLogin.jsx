@@ -31,7 +31,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#fafafa' }}>
+    <div className="min-h-[100dvh] flex" style={{ background: '#fafafa' }}>
       {/* Left side — Form */}
       <div className="flex-1 flex flex-col justify-center px-6 sm:px-8 lg:flex-none lg:w-1/2 xl:w-[45%] lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">

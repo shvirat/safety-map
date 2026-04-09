@@ -168,7 +168,7 @@ const MapComponent = () => {
   };
 
   return (
-    <div className="relative h-screen w-full font-sans overflow-hidden" style={{ background: '#0c0c10' }}>
+    <div className="relative h-[100dvh] w-full font-sans overflow-hidden" style={{ background: '#0c0c10' }}>
 
       {/* ─── Sidebar ─── */}
       <Sidebar

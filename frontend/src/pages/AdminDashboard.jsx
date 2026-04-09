@@ -102,7 +102,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col font-sans overflow-hidden" style={{ background: '#fafafa' }}>
+    <div className="h-[100dvh] flex flex-col font-sans overflow-hidden" style={{ background: '#fafafa' }}>
 
       {/* ─── Navbar ─── */}
       <nav className="shrink-0 z-30" style={{ background: '#ffffff', borderBottom: '1px solid #e5e7eb' }}>
