@@ -1,45 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+/* ========================================
+   DESIGN TOKENS
+   ======================================== */
 :root {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+
+  /* Surface colors */
+  --surface-dark: #0c0c10;
+  --surface-dark-hover: #141418;
+  --surface-card-dark: #18181f;
+  --surface-light: #ffffff;
+  --surface-subtle: #f8f9fb;
+
+  /* Text */
+  --text-primary: #f0f0f5;
+  --text-secondary: #8b8b9e;
+  --text-muted: #5a5a6e;
+  --text-dark: #111118;
+  --text-dark-secondary: #64748b;
+
+  /* Accent — used sparingly */
+  --accent: #6366f1;
+  --accent-hover: #5558e6;
+  --accent-subtle: rgba(99, 102, 241, 0.08);
+  --accent-glow: rgba(99, 102, 241, 0.15);
+
+  /* Borders */
+  --border-dark: rgba(255, 255, 255, 0.06);
+  --border-light: #e5e7eb;
+  --border-subtle: rgba(255, 255, 255, 0.03);
+
+  /* Severity */
+  --severity-low: #94a3b8;
+  --severity-medium: #3b82f6;
+  --severity-high: #f59e0b;
+  --severity-critical: #ef4444;
+
+  /* Categories */
+  --cat-theft: #f59e0b;
+  --cat-harassment: #ef4444;
+  --cat-lighting: #eab308;
+  --cat-accident: #8b5cf6;
+  --cat-suspicious: #06b6d4;
+}
+
+/* ========================================
+   BASE RESET
+   ======================================== */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #f8fafc;
+  background-color: var(--surface-dark);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Leaflet Customizations for Premium Feel */
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================
+   SIDEBAR
+   ======================================== */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 90vw;
+  background: var(--surface-dark);
+  border-right: 1px solid var(--border-dark);
+  z-index: 45;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-panel.sidebar-open {
+  transform: translateX(0);
+}
+
+.sidebar-tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+
+.sidebar-tab-btn:hover {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.sidebar-tab-btn.active {
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* ========================================
+   LEAFLET POPUP OVERRIDES (Dark Theme)
+   ======================================== */
 .leaflet-popup-content-wrapper {
   border-radius: 16px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
   padding: 4px;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: #ffffff !important;
+  border: 1px solid var(--border-light);
 }
 
 .leaflet-popup-tip {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .custom-popup .leaflet-popup-content {
   margin: 12px 16px !important;
 }
 
-/* GeoSearch Customizations */
+.leaflet-popup-close-button {
+  color: #94a3b8 !important;
+  font-size: 20px !important;
+  padding: 8px 10px 0 0 !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #1e293b !important;
+}
+
+/* ========================================
+   GEOSEARCH OVERRIDES (Dark Theme)
+   ======================================== */
 .leaflet-control-geosearch {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
   border-radius: 12px !important;
-  border: 1px solid rgba(226, 232, 240, 1) !important;
+  border: 1px solid var(--border-dark) !important;
   overflow: hidden;
 }
 
 .leaflet-control-geosearch form {
   border-radius: 12px !important;
-  background-color: white !important;
+  background-color: var(--surface-card-dark) !important;
 }
 
 .leaflet-control-geosearch form input {
@@ -48,6 +189,12 @@ body {
   height: 48px !important;
   padding-left: 16px !important;
   outline: none !important;
+  color: var(--text-primary) !important;
+  background: transparent !important;
+}
+
+.leaflet-control-geosearch form input::placeholder {
+  color: var(--text-muted) !important;
 }
 
 .leaflet-control-geosearch a.reset {
@@ -56,40 +203,45 @@ body {
   justify-content: center !important;
   height: 48px !important;
   width: 48px !important;
-  color: #94a3b8 !important;
-  transition: color 0.2s !important;
+  color: var(--text-secondary) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-left: 1px solid var(--border-dark) !important;
+  transition: color 0.2s, background 0.2s !important;
 }
 
 .leaflet-control-geosearch a.reset:hover {
-  color: #ef4444 !important;
-  background: none !important;
+  color: #ffffff !important;
+  background: rgba(239, 68, 68, 0.15) !important;
 }
 
 .leaflet-control-geosearch .results {
   font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
-  border-top: 1px solid #f1f5f9 !important;
+  border-top: 1px solid var(--border-dark) !important;
+  background: var(--surface-card-dark) !important;
 }
 
 .leaflet-control-geosearch .results > * {
   padding: 12px 16px !important;
-  border-bottom: 1px solid #f8fafc !important;
-  color: #334155 !important;
+  border-bottom: 1px solid var(--border-dark) !important;
+  color: var(--text-secondary) !important;
 }
 
 .leaflet-control-geosearch .results > *:hover {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: var(--text-primary) !important;
 }
 
-/* Mobile Searchbar fix */
+/* Mobile searchbar fix */
 @media (max-width: 640px) {
   .leaflet-control-geosearch {
     margin-top: 64px !important;
   }
 }
 
-/* Pulse Marker CSS */
+/* ========================================
+   PULSE MARKER (Enhanced)
+   ======================================== */
 .custom-pulse-marker {
   background: transparent;
   border: none;
@@ -109,8 +261,8 @@ body {
   height: 14px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .pulse-ring {
@@ -122,10 +274,96 @@ body {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 2px solid;
-  animation: pulse-ring-anim 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  animation: pulse-ring-anim 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
 }
 
 @keyframes pulse-ring-anim {
-  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; border-width: 3px; }
-  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; border-width: 0px; }
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.8; border-width: 3px; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; border-width: 0px; }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes subtlePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease both;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease both;
+}
+
+/* Staggered animations */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-card-dark) 25%, rgba(255,255,255,0.05) 50%, var(--surface-card-dark) 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s ease infinite;
+  border-radius: 8px;
+}
+
+/* ========================================
+   LEAFLET MAP ATTRIBUTION (minimal)
+   ======================================== */
+.leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+  border-radius: 4px 0 0 0 !important;
+}
+.leaflet-control-attribution a {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }

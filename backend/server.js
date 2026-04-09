@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import reportRoutes from './routes/reports.js';
 import adminRoutes from './routes/admin.js';
+import newsRoutes from './routes/news.js';
 
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/reports', reportRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/news', newsRoutes);
 
 app.get('/', (req, res) => {
   res.send('SafetyMap API is running...');

@@ -5,12 +5,13 @@ import 'leaflet-geosearch/dist/geosearch.css';
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import toast from 'react-hot-toast';
-import { reportService } from '../services/api';
+import { reportService, timeAgo } from '../services/api';
 import ReportModal from './ReportModal';
-import { Crosshair, ShieldAlert, Navigation, X } from 'lucide-react';
+import Sidebar from './Sidebar';
+import { Menu, ShieldAlert, Navigation, X, MapPin, Clock, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// leaflet ka default icon fix kr rhe h warna purana dikhega
+// Leaflet default icon fix
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -18,18 +19,18 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// marker k colours set krne k lie
-const getMarkerColor = (type, severity) => {
-  if (severity === 'Critical') return '#e11d48'; // rose-600
+/* ─── Category & Severity Config ─── */
+const CATEGORY_CONFIG = {
+  'theft': { icon: '🔓', label: 'Theft', color: '#f59e0b' },
+  'harassment': { icon: '⚠️', label: 'Harassment', color: '#ef4444' },
+  'poor lighting': { icon: '💡', label: 'Poor Lighting', color: '#eab308' },
+  'accident': { icon: '💥', label: 'Accident', color: '#8b5cf6' },
+  'suspicious activity': { icon: '👁️', label: 'Suspicious Activity', color: '#06b6d4' },
+};
 
-  const colors = {
-    'theft': '#f59e0b',
-    'harassment': '#f20024',
-    'poor lighting': '#f2d200',
-    'accident': '#0400ff',
-    'suspicious activity': '#00eeff'
-  };
-  return colors[type] || '#3b82f6';
+const getMarkerColor = (type, severity) => {
+  if (severity === 'Critical') return '#ef4444';
+  return CATEGORY_CONFIG[type]?.color || '#6366f1';
 };
 
 const createPulseIcon = (color) => {
@@ -41,12 +42,13 @@ const createPulseIcon = (color) => {
         <div class="pulse-dot" style="background-color: ${color}"></div>
       </div>
     `,
-    iconSize: [20, 20],
+    iconSize: [25, 25],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
   });
 };
 
+/* ─── Sub-Components ─── */
 const MapClickComponent = ({ onMapClick }) => {
   useMapEvents({
     click: (e) => {
@@ -74,6 +76,7 @@ const SearchField = () => {
   return null;
 };
 
+/* ─── Main Component ─── */
 const MapComponent = () => {
   const [reports, setReports] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,6 +84,11 @@ const MapComponent = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [mapRef, setMapRef] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    types: ['theft', 'harassment', 'poor lighting', 'accident', 'suspicious activity'],
+    severities: ['Low', 'Medium', 'High', 'Critical']
+  });
 
   const DELHI_NCR_CENTER = [28.6139, 77.2090];
 
@@ -123,8 +131,8 @@ const MapComponent = () => {
 
   const handleReportSubmit = () => {
     setModalOpen(false);
-    toast.success('Report submitted securely. Pending verification.', {
-      style: { borderRadius: '12px', background: '#1e293b', color: '#fff' }
+    toast.success('Report submitted. Pending verification.', {
+      style: { borderRadius: '12px', background: '#18181f', color: '#f0f0f5', border: '1px solid rgba(255,255,255,0.06)' }
     });
     fetchApprovedReports();
   };
@@ -134,53 +142,125 @@ const MapComponent = () => {
       mapRef.flyTo([userLocation.lat, userLocation.lng], 15, { animate: true, duration: 1.5 });
     } else {
       detectUserLocation();
-      toast('Locating signal...', { icon: '📡' });
+      toast('Locating signal...', { icon: '📡', style: { borderRadius: '12px', background: '#18181f', color: '#f0f0f5' } });
     }
   };
 
+  const handleFlyTo = (lat, lng) => {
+    if (mapRef) {
+      mapRef.flyTo([lat, lng], 16, { animate: true, duration: 1.2 });
+    }
+  };
+
+  // Apply filters
+  const filteredReports = reports.filter(r =>
+    filters.types.includes(r.type) && filters.severities.includes(r.severity)
+  );
+
+  const getSeverityStyle = (severity) => {
+    const map = {
+      'Critical': { color: '#ef4444', bg: '#ef444418' },
+      'High': { color: '#f59e0b', bg: '#f59e0b18' },
+      'Medium': { color: '#3b82f6', bg: '#3b82f618' },
+      'Low': { color: '#94a3b8', bg: '#94a3b818' },
+    };
+    return map[severity] || map['Medium'];
+  };
+
   return (
-    <div className="relative h-screen w-full font-sans bg-slate-50 overflow-hidden">
+    <div className="relative h-screen w-full font-sans overflow-hidden" style={{ background: '#0c0c10' }}>
 
+      {/* ─── Sidebar ─── */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        reports={reports}
+        onFlyTo={handleFlyTo}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
 
-      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-1000 flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur border border-white/20 shadow-md sm:px-5 sm:py-3 px-3 py-2 rounded-xl sm:rounded-2xl">
-        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-inner">
-          <ShieldAlert className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div>
-          <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-none">SafetyMap</h1>
-          <p className="hidden sm:block text-[11px] font-medium text-slate-500 mt-1 uppercase tracking-wider">Community Watch</p>
+      {/* ─── Header ─── */}
+      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-30 flex items-center gap-2">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="w-12 h-12 rounded-xl flex items-center justify-center glass transition-all cursor-pointer"
+          style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
+          title="Open Menu"
+        >
+          <Menu className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
+        </button>
+        <div className="flex items-center gap-2.5 glass rounded-xl px-3 py-2.5"
+          style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--accent)' }}>
+            <ShieldAlert className="w-4.5 h-4.5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-[15px] font-bold tracking-tight leading-none" style={{ color: 'var(--text-primary)' }}>
+              SafetyMap
+            </h1>
+            {/* <p className="hidden sm:block text-[10px] font-semibold mt-0.5 uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+              Community Watch
+            </p> */}
+          </div>
+          {reports.length > 0 && (
+            <div className="hidden sm:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-lg" style={{ background: 'var(--accent-subtle)' }}>
+              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#10b981' }} />
+              <span className="text-[11px] font-bold" style={{ color: 'var(--accent)' }}>
+                {reports.length}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-
-      <div className="absolute bottom-6 left-4 z-1000">
+      {/* ─── Admin Link ─── */}
+      <div className="hidden md:block absolute bottom-6 left-4 z-30">
         <Link
           to="/admin"
-          className="bg-white/90 backdrop-blur leading-none p-3 sm:px-4 sm:py-3 rounded-xl shadow-sm border border-slate-200 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors flex items-center gap-2"
+          className="glass flex items-center gap-2 leading-none p-3 sm:px-4 sm:py-3 rounded-xl text-xs font-semibold transition-colors no-underline"
+          style={{ color: 'var(--text-secondary)', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
         >
-          <span className="hidden sm:inline">Admin Portal &rarr;</span>
-          <ShieldAlert className="w-5 h-5 sm:hidden text-indigo-500" />
+          <ShieldAlert className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+          <span className="hidden sm:inline">Admin Portal</span>
         </Link>
       </div>
 
-
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-1000 pointer-events-none w-[90%] sm:w-auto flex justify-center">
-        <div className="bg-slate-900/95 backdrop-blur-md px-4 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-2xl flex items-center gap-2 sm:gap-3 border border-slate-700/50">
-          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shrink-0"></div>
-          <span className="text-[13px] sm:text-sm font-medium text-white shadow-sm whitespace-nowrap">Tap anywhere to report</span>
+      {/* ─── CTA Bar ─── */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none w-[90%] sm:w-auto flex justify-center">
+        <div className="glass rounded-full px-5 py-2.5 flex items-center gap-2.5"
+          style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+          <div className="w-2 h-2 rounded-full" style={{ background: '#10b981', animation: 'subtlePulse 2s ease infinite' }} />
+          <span className="text-[13px] font-medium whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>
+            Tap anywhere to report an incident
+          </span>
         </div>
       </div>
 
+      {/* ─── Filter Active Indicator ─── */}
+      {(filters.types.length < 5 || filters.severities.length < 4) && (
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 flex items-center" style={{ marginRight: '0' }}>
+          <div className="glass rounded-lg px-3 py-2 flex items-center gap-2"
+            style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <Eye className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+            <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>
+              {filteredReports.length}/{reports.length}
+            </span>
+          </div>
+        </div>
+      )}
 
+      {/* ─── Location Button ─── */}
       <button
         onClick={focusUserLocation}
-        className="absolute bottom-24 right-4 md:bottom-6 md:right-6 z-1000 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 group"
+        className="absolute bottom-24 right-4 md:bottom-6 md:right-6 z-30 glass w-12 h-12 rounded-xl flex items-center justify-center transition-all group cursor-pointer"
+        style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
         title="Find My Location"
       >
-        <Navigation className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+        <Navigation className="w-5 h-5 group-hover:rotate-12 transition-transform" style={{ color: 'var(--text-primary)' }} />
       </button>
 
-
+      {/* ─── Map ─── */}
       <MapContainer
         center={DELHI_NCR_CENTER}
         zoom={11}
@@ -190,74 +270,98 @@ const MapComponent = () => {
         zoomControl={false}
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
 
-        <SearchField />
+        {/* <SearchField /> */}
         <MapClickComponent onMapClick={handleMapClick} />
 
-        {/* user k liye blue dot */}
+        {/* User location blue dot */}
         {userLocation && (
-          <CircleMarker
-            center={[userLocation.lat, userLocation.lng]}
-            radius={8}
-            pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#4f46e5', fillOpacity: 1 }}
+          <Marker
+            position={[userLocation.lat, userLocation.lng]}
+            icon={L.divIcon({
+              className: 'user-location-marker',
+              html: `
+                <div style="
+                  width: 16px;
+                  height: 16px;
+                  background-color: #6366f1;
+                  border: 3px solid #ffffff;
+                  border-radius: 50%;
+                  box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+                "></div>
+              `,
+              iconSize: [22, 22],
+              iconAnchor: [11, 11],
+              popupAnchor: [0, -11]
+            })}
           >
             <Popup className="custom-popup">
-              <span className="font-semibold text-slate-800">You are here</span>
+              <span className="font-semibold text-slate-800 text-sm pr-3 text-center">You are here</span>
             </Popup>
-          </CircleMarker>
+          </Marker>
         )}
 
         {/* Report Markers */}
-        {reports.map((report) => (
+        {filteredReports.map((report) => (
           <Marker
             key={report._id}
             position={[report.location.lat, report.location.lng]}
             icon={createPulseIcon(getMarkerColor(report.type, report.severity))}
           >
             <Popup className="custom-popup">
-              <div className="w-48 sm:w-56">
-                <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2">
-                  <strong className="block text-[15px] font-bold capitalize text-slate-900 leading-tight">
-                    {report.type}
-                  </strong>
+              <div className="w-56">
+                {/* Header */}
+                <div className="flex justify-start gap-2 items-center mb-2.5 pb-2" style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">{CATEGORY_CONFIG[report.type]?.icon || '📍'}</span>
+                    <strong className="text-[14px] font-bold capitalize text-slate-900 leading-tight">
+                      {report.type}
+                    </strong>
+                  </div>
                   {report.severity && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide
-                      ${report.severity === 'Critical' ? 'bg-rose-100 text-rose-700' :
-                        report.severity === 'High' ? 'bg-amber-100 text-amber-700' :
-                          report.severity === 'Low' ? 'bg-slate-100 text-slate-600' :
-                            'bg-blue-100 text-blue-500'}`}>
+                    <span className="text-[10px] px-2 py-0.5 rounded-md font-bold uppercase"
+                      style={{
+                        color: getSeverityStyle(report.severity).color,
+                        background: getSeverityStyle(report.severity).bg
+                      }}>
                       {report.severity}
                     </span>
                   )}
                 </div>
 
+                {/* Description */}
                 {report.description ? (
-                  <p className="text-[13px] text-slate-600 mb-3 leading-relaxed line-clamp-3">
+                  <p className="text-[12px] text-slate-600 mb-2.5 leading-relaxed line-clamp-3">
                     {report.description}
                   </p>
                 ) : (
-                  <p className="text-[13px] text-slate-400 italic mb-3">No description provided</p>
+                  <p className="text-[12px] text-slate-400 italic mb-2.5">No description provided</p>
                 )}
 
+                {/* Image */}
                 {report.imageUrl && (
                   <div
-                    className="relative overflow-hidden rounded-xl mb-3 border border-slate-100 shadow-sm cursor-pointer group"
+                    className="relative overflow-hidden rounded-lg mb-2.5 cursor-pointer group"
+                    style={{ border: '1px solid #e5e7eb' }}
                     onClick={() => setPreviewImage(report.imageUrl)}
                   >
-                    <img src={report.imageUrl} alt="Incident" className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <span className="text-white text-[10px] font-semibold tracking-wide uppercase px-2 py-1 bg-black/60 rounded-md backdrop-blur-sm">Enlarge photo</span>
+                    <img src={report.imageUrl} alt="Incident" className="w-full h-28 object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <span className="text-white text-[10px] font-semibold uppercase px-2 py-1 bg-black/50 rounded-md">View</span>
                     </div>
                   </div>
                 )}
 
+                {/* Timestamp */}
                 {report.datetime && (
-                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium pt-1 mt-1">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                    <Clock className="w-3 h-3" />
+                    {/* <span>{timeAgo(report.datetime)}</span>
+                    <span className="mx-0.5">·</span> */}
                     <span>{new Date(report.datetime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                    <span>{new Date(report.datetime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 )}
               </div>
@@ -266,6 +370,7 @@ const MapComponent = () => {
         ))}
       </MapContainer>
 
+      {/* ─── Report Modal ─── */}
       {modalOpen && (
         <ReportModal
           location={selectedLocation}
@@ -274,27 +379,34 @@ const MapComponent = () => {
         />
       )}
 
-      {/* Image Preview Modal */}
+      {/* ─── Image Preview Modal ─── */}
       {previewImage && (
         <div
-          className="fixed inset-0 z-3000 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-6 cursor-zoom-out transition-all"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 cursor-zoom-out transition-all animate-fade-in"
+          style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(8px)' }}
           onClick={() => setPreviewImage(null)}
         >
           <button
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2.5 sm:p-3 transition-all shadow-2xl backdrop-blur-sm border border-white/20 z-50"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer"
+            style={{
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'rgba(255,255,255,0.7)'
+            }}
             onClick={(e) => {
               e.stopPropagation();
               setPreviewImage(null);
             }}
             title="Close Preview"
           >
-            <X className="w-6 h-6 sm:w-7 sm:h-7" />
+            <X className="w-5 h-5" />
           </button>
-          
+
           <img
             src={previewImage}
             alt="Expanded evidence"
-            className="w-auto h-auto max-w-full max-h-full sm:max-w-[95vw] sm:max-h-[90vh] object-contain rounded-md sm:rounded-xl shadow-2xl pointer-events-auto cursor-default"
+            className="w-auto h-auto max-w-full max-h-full sm:max-w-[95vw] sm:max-h-[90vh] object-contain rounded-xl pointer-events-auto cursor-default"
+            style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
             onClick={(e) => e.stopPropagation()}
           />
         </div>
