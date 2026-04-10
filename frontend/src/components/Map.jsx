@@ -23,7 +23,7 @@ L.Icon.Default.mergeOptions({
 const CATEGORY_CONFIG = {
   'theft': { icon: '🔓', label: 'Theft', color: '#f59e0b' },
   'harassment': { icon: '⚠️', label: 'Harassment', color: '#ef4444' },
-  'poor lighting': { icon: '💡', label: 'Poor Lighting', color: '#eab308' },
+  'poor lighting': { icon: '💡', label: 'Poor Lighting', color: '#3df628' },
   'accident': { icon: '💥', label: 'Accident', color: '#8b5cf6' },
   'suspicious activity': { icon: '👁️', label: 'Suspicious Activity', color: '#06b6d4' },
 };
