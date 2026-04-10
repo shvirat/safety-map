@@ -287,7 +287,7 @@ const MapComponent = () => {
                 <div style="
                   width: 16px;
                   height: 16px;
-                  background-color: #6366f1;
+                  background-color: #3939f9;
                   border: 3px solid #ffffff;
                   border-radius: 50%;
                   box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
